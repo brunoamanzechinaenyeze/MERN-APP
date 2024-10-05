@@ -1,6 +1,7 @@
 import bcryptjs from "bcryptjs";
 import { User } from "../models/user.model.js";
 import { generateTokenAndSetCookie } from "../utils/generateTokenAndSetCookie.js";
+import { sendVerificationEmail } from "../mailtrap/email.js";
 
 export const signUp = async (req, res) => {
   const { email, password, name } = req.body;
@@ -11,12 +12,16 @@ export const signUp = async (req, res) => {
 
     const userExists = await User.findOne({ email }); // Use User instead of user
     if (userExists) {
-      return res.status(400).json({ success: false, message: "User already exists" });
+      return res
+        .status(400)
+        .json({ success: false, message: "User already exists" });
     }
 
     const hashedPwd = await bcryptjs.hash(password, 10);
-    const verificationToken = Math.floor(100000 + Math.random() * 900000).toString();
-    
+    const verificationToken = Math.floor(
+      100000 + Math.random() * 900000
+    ).toString();
+
     const user = new User({
       email,
       password: hashedPwd,
@@ -27,9 +32,10 @@ export const signUp = async (req, res) => {
 
     await user.save(); // Saving it to the database
 
-// Generate token and set cookie
-generateTokenAndSetCookie(res, user._id);
-sendVerificationEmail(user.email, verificationToken)
+    // Generate token and set cookie
+    generateTokenAndSetCookie(res, user._id);
+
+    await sendVerificationEmail(user.email, verificationToken);
 
     // Send success response
     res.status(201).json({
@@ -37,7 +43,7 @@ sendVerificationEmail(user.email, verificationToken)
       message: "User created successfully",
       user: {
         ...user._doc,
-        password: undefined // Do not return the password
+        password: undefined, // Do not return the password
       },
     });
   } catch (err) {
