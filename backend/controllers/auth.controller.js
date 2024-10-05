@@ -1,5 +1,6 @@
 import bcryptjs from "bcryptjs";
 import { User } from "../models/user.model.js";
+import { generateTokenAndSetCookie } from "../utils/generateTokenAndSetCookie.js";
 
 export const signUp = async (req, res) => {
   const { email, password, name } = req.body;
@@ -27,7 +28,7 @@ export const signUp = async (req, res) => {
     await user.save(); // Saving it to the database
 
     // Generate token and set cookie
-    // generateTokenAndSetCookie(res, user._id);
+    generateTokenAndSetCookie(res, user._id);
 
     // Send success response
     res.status(201).json({
