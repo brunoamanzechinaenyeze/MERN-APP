@@ -27,8 +27,9 @@ export const signUp = async (req, res) => {
 
     await user.save(); // Saving it to the database
 
-    // Generate token and set cookie
-    generateTokenAndSetCookie(res, user._id);
+// Generate token and set cookie
+generateTokenAndSetCookie(res, user._id);
+sendVerificationEmail(user.email, verificationToken)
 
     // Send success response
     res.status(201).json({
