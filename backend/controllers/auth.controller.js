@@ -11,6 +11,7 @@ export const signUp = async (req, res) => {
     }
 
     const userExists = await User.findOne({ email }); // Use User instead of user
+
     if (userExists) {
       return res
         .status(400)
@@ -27,8 +28,8 @@ export const signUp = async (req, res) => {
       password: hashedPwd,
       name,
       verificationToken,
-      verificationTokenExpiresAt: Date.now() + 24 * 60 * 60 * 1000,
-    });
+      verificationTokenExpiresAt: Date.now() + 24 * 60 * 60 * 1000, //24 hours expiry date
+    }); //Passing the new data to the Model, You should get the new keyWord before the User, I am assuming you are not a beginner
 
     await user.save(); // Saving it to the database
 
@@ -53,26 +54,26 @@ export const signUp = async (req, res) => {
 };
 
 export const verifyEmail = async (req, res) => {
-    const { code } = req.body;
-    try {
-        const user = await User.findOne({
-            verificationToken: code,
-            verificationTokenExpiresAt: { $gt: Date.now() }
-        })
+  const { code } = req.body;
+  try {
+    const user = await User.findOne({
+      verificationToken: code,
+      verificationTokenExpiresAt: { $gt: Date.now() },
+    });
 
-        if (!user) {
-            return res.status(400).json({ success: false, message: "Invalid or expired code "})
-        }
-        user.isVerified = true;
-        user.verificationToken = undefined;
-        user.verificationTokenExpiresAt = undefined;
-        await user.save()
-
-        await sendWelcomeEmail(user.email, user.name)
-    } catch (error) {
-        
+    if (!user) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid or expired code " });
     }
-}
+    user.isVerified = true;
+    user.verificationToken = undefined;
+    user.verificationTokenExpiresAt = undefined;
+    await user.save();
+
+    await sendWelcomeEmail(user.email, user.name);
+  } catch (error) {}
+};
 
 export const Login = async (req, res) => {
   res.send("Login Route");
