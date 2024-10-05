@@ -18,4 +18,6 @@ export const sendVerificationEmail = async (email, verificationToken) => {
         console.error(`Error sending verification`, `email: ${error}`)
         throw new Error("Error sending verification email")
     }
-} //58:22
+} 
+
+export const sendWelcomeEmail = async
