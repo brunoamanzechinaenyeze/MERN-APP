@@ -79,7 +79,12 @@ export const verifyEmail = async (req, res) => {
       ...user._doc,
       password: undefined
     }})
-  } catch (error) {}
+  } catch (error) {
+    res.status(500).json({
+      "Success":false, 
+      "message": "Server Error"
+    })
+  }
 };
 
 export const Login = async (req, res) => {
