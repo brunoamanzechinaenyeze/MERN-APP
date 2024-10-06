@@ -18,7 +18,7 @@ export const sendVerificationEmail = async (email, verificationToken) => {
 
     console.log("Email sent successufully", response);
   } catch (err) {
-    console.error(`Error sending verification`, `email: ${error}`);
+    console.error(`Error sending verification`, `email: ${err}`);
     throw new Error("Error sending verification email");
   }
 };
@@ -37,7 +37,7 @@ export const sendWelcomeEmail = async (email, name) => {
       },
     });
 
-    console.log("Email sent successfully", response)
+    console.log("Email sent successfully", res)
   } catch (err) {
     console.error('Error sending the welcome email', err)
     throw new err(`Email was not successfully sent to the user: ${err}`)
