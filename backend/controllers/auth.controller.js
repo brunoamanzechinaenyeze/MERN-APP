@@ -88,7 +88,20 @@ export const verifyEmail = async (req, res) => {
 };
 
 export const Login = async (req, res) => {
-  res.send("Login Route");
+  const { email, password } = req.body
+  try {
+    const user = user.findOne( { email } )
+    if(!user) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid Credentials"
+      })
+    }
+
+    const isPasswordValid = bcryptjs.compare(password,user.password)
+  }catch(err) {
+
+  }
 };
 
 export const Logout = async (req, res) => {
