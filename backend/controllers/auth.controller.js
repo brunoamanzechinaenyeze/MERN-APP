@@ -1,7 +1,7 @@
 import bcryptjs from "bcryptjs";
 import { User } from "../models/user.model.js";
 import { generateTokenAndSetCookie } from "../utils/generateTokenAndSetCookie.js";
-import { sendVerificationEmail } from "../mailtrap/email.js";
+import { sendVerificationEmail, sendWelcomeEmail } from "../mailtrap/email.js";
 
 export const signUp = async (req, res) => {
   const { email, password, name } = req.body;
@@ -71,7 +71,7 @@ export const verifyEmail = async (req, res) => {
     user.verificationTokenExpiresAt = undefined;
     await user.save();
 
-    await sendWelcomeEmail(user.email, user.name);
+    await sendWelcomeEmail(user.email, user.name)
   } catch (error) {}
 };
 
