@@ -1,4 +1,4 @@
-import bcryptjs from "bcryptjs";
+import bcryptjs from "bcryptjs/dist/bcrypt.js";
 import { User } from "../models/user.model.js";
 import { generateTokenAndSetCookie } from "../utils/generateTokenAndSetCookie.js";
 import { sendVerificationEmail, sendWelcomeEmail } from "../mailtrap/email.js";
@@ -90,7 +90,7 @@ export const verifyEmail = async (req, res) => {
 export const Login = async (req, res) => {
   const { email, password } = req.body
   try {
-    const user = user.findOne( { email } )
+    const user = await User.findOne( { email } )
     if(!user) {
       return res.status(400).json({
         success: false,
@@ -98,9 +98,34 @@ export const Login = async (req, res) => {
       })
     }
 
-    const isPasswordValid = bcryptjs.compare(password,user.password)
-  }catch(err) {
+    const isPasswordValid = await bcryptjs.compare(password,user.password)
 
+    if(!isPasswordValid) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid Credentials"
+      })
+    }
+
+    generateTokenAndSetCookie(res, user._id)
+
+    user.lastLogin = new Date()
+    await user.save()
+
+    res.status(200).json({
+      success: true,
+      message: "Logged in successfully",
+      user: {
+        ...user._doc,
+        password: undefined
+      }
+    })
+  }catch(err) {
+    console.log('Error in login', err)
+    res.status(400).json({
+      success: false,
+      message: err.message
+    })
   }
 };
 
