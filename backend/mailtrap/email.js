@@ -36,7 +36,7 @@ export const sendWelcomeEmail = async (email, name) => {
       },
     });
 
-    console.log("Email sent successfully", res)
+    console.log("Email sent successfully")
   } catch (err) {
     console.error('Error sending the welcome email', err)
     throw new err(`Email was not successfully sent to the user: ${err}`)
@@ -54,7 +54,6 @@ try {
   })
 } catch (error) {
    console.error(`Error sending password reset email`, error);
-
    throw new Error(`Error sending password reset email: ${error}`);
 }
 }
